@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ideabl · 아이디어블</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:      #1A1A1A;
+  --ink-mid:  #555552;
+  --ink-light:#8A8880;
+  --paper:    #FAFAF8;
+  --paper-2:  #F3F1EB;
+  --rule:     #E0DDD5;
+  --rule-dark:#C8C5BC;
+  --green:    #1D7A5F;
+  --green-lt: #E4F0EC;
+  --serif:    'Noto Serif KR', serif;
+  --sans:     'Noto Sans KR', sans-serif;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--paper); color: var(--ink); line-height: 1.7; }
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+  padding: 0 48px;
+  height: 60px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.nav-logo {
+  font-family: var(--serif);
+  font-weight: 700; font-size: 17px;
+  color: var(--ink); text-decoration: none;
+  letter-spacing: -0.01em;
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-logo span { color: var(--ink-light); font-weight: 300; font-size: 14px; }
+.nav-links { display: flex; align-items: center; gap: 32px; }
+.nav-links a {
+  font-size: 13px; color: var(--ink-mid);
+  text-decoration: none; letter-spacing: 0.02em;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--ink); }
+.nav-cta {
+  background: var(--ink); color: var(--paper) !important;
+  padding: 7px 18px; border-radius: 3px;
+  font-size: 12px !important;
+  letter-spacing: 0.06em !important;
+}
+.nav-cta:hover { background: #333 !important; }
+
+/* ── HERO ── */
+.hero {
+  min-height: calc(100vh - 60px);
+  display: grid; grid-template-columns: 1fr 1fr;
+  align-items: center;
+  padding: 80px 48px 80px 80px;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--rule);
+}
+.hero-left { max-width: 520px; }
+.hero-eyebrow {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 28px;
+}
+.hero-eyebrow-line { width: 32px; height: 1px; background: var(--ink); }
+.hero-eyebrow span {
+  font-size: 11px; color: var(--ink-light);
+  letter-spacing: 0.2em; font-family: var(--sans); font-weight: 400;
+}
+.hero-h1 {
+  font-family: var(--serif); font-weight: 700;
+  font-size: clamp(36px, 4.5vw, 58px);
+  line-height: 1.2; letter-spacing: -0.03em;
+  color: var(--ink); margin-bottom: 8px;
+}
+.hero-h1-sub {
+  font-family: var(--serif); font-weight: 300;
+  font-size: clamp(30px, 3.8vw, 50px);
+  line-height: 1.3; letter-spacing: -0.02em;
+  color: var(--ink-light); margin-bottom: 28px;
+}
+.hero-desc {
+  font-size: 15px; color: var(--ink-mid); line-height: 1.85;
+  margin-bottom: 40px; max-width: 380px;
+}
+.hero-btns { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+.btn-primary {
+  background: var(--ink); color: var(--paper);
+  padding: 13px 28px; border-radius: 3px;
+  font-family: var(--sans); font-size: 13px;
+  letter-spacing: 0.06em; text-decoration: none;
+  border: none; cursor: pointer; transition: background 0.2s;
+}
+.btn-primary:hover { background: #333; }
+.btn-ghost {
+  background: transparent; color: var(--ink-mid);
+  padding: 12px 24px; border-radius: 3px;
+  font-family: var(--sans); font-size: 13px;
+  letter-spacing: 0.04em; text-decoration: none;
+  border: 1px solid var(--rule-dark); cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+.hero-right {
+  position: relative; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-ink-svg {
+  width: 340px; height: 480px; opacity: 0.07;
+  position: absolute; right: 20px;
+}
+.hero-stat-card {
+  position: relative; z-index: 2;
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  padding: 28px 32px;
+  width: 260px;
+  box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+}
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.stat-item { }
+.stat-num {
+  font-family: var(--serif); font-weight: 700;
+  font-size: 28px; color: var(--ink);
+  letter-spacing: -0.03em; line-height: 1;
+}
+.stat-label {
+  font-size: 10px; color: var(--ink-light);
+  letter-spacing: 0.12em; margin-top: 4px;
+}
+.stat-divider { height: 1px; background: var(--rule); margin: 0 0 16px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--green);
+  background: var(--green-lt);
+  padding: 5px 12px; border-radius: 2px;
+  letter-spacing: 0.08em;
+}
+.badge-dot {
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--green);
+}
+
+/* ── SECTION COMMON ── */
+section { padding: 96px 80px; border-bottom: 1px solid var(--rule); }
+.section-eyebrow {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+}
+.section-eyebrow-line { width: 24px; height: 1px; background: var(--ink-light); }
+.section-eyebrow span {
+  font-size: 10px; color: var(--ink-light);
+  letter-spacing: 0.22em; font-weight: 400;
+}
+.section-title {
+  font-family: var(--serif); font-weight: 600;
+  font-size: clamp(26px, 3vw, 38px);
+  color: var(--ink); letter-spacing: -0.02em;
+  line-height: 1.25; margin-bottom: 12px;
+}
+.section-title-light {
+  font-weight: 300; color: var(--ink-light);
+}
+.section-desc {
+  font-size: 14px; color: var(--ink-mid);
+  line-height: 1.9; max-width: 480px;
+  margin-bottom: 52px;
+}
+
+/* ── CREATOR SECTION ── */
+.creator-header {
+  display: flex; justify-content: space-between;
+  align-items: flex-end; margin-bottom: 40px;
+  flex-wrap: wrap; gap: 16px;
+}
+.creator-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+}
+.creator-card {
+  background: white;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: pointer;
+  text-decoration: none; color: inherit;
+}
+.creator-card:hover {
+  border-color: var(--ink);
+  transform: translateY(-2px);
+}
+.creator-card-thumb {
+  height: 140px;
+  background: var(--paper-2);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.thumb-pattern {
+  position: absolute; inset: 0; opacity: 0.5;
+}
+.thumb-icon {
+  font-family: var(--serif); font-size: 36px;
+  color: var(--ink-light); opacity: 0.4;
+  position: relative; z-index: 1;
+}
+.creator-card-body { padding: 16px 18px; }
+.creator-card-category {
+  font-size: 10px; color: var(--ink-light);
+  letter-spacing: 0.16em; margin-bottom: 8px;
+}
+.creator-card-name {
+  font-family: var(--serif); font-weight: 600;
+  font-size: 15px; color: var(--ink);
+  margin-bottom: 6px; letter-spacing: -0.01em;
+}
+.creator-card-desc {
+  font-size: 12px; color: var(--ink-mid);
+  line-height: 1.7;
+}
+.creator-card-footer {
+  padding: 10px 18px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.creator-card-tag {
+  font-size: 10px; color: var(--ink-light);
+  letter-spacing: 0.08em;
+}
+.creator-card-arrow {
+  font-size: 12px; color: var(--ink-light);
+}
+
+/* ── HOW IT WORKS ── */
+.how-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 0;
+  border: 1px solid var(--rule); border-radius: 6px; overflow: hidden;
+  margin-top: 0;
+}
+.how-item {
+  padding: 36px 32px;
+  border-right: 1px solid var(--rule);
+  position: relative;
+}
+.how-item:last-child { border-right: none; }
+.how-num {
+  font-family: var(--serif); font-weight: 700;
+  font-size: 11px; color: var(--rule-dark);
+  letter-spacing: 0.14em; margin-bottom: 20px;
+  display: block;
+}
+.how-title {
+  font-family: var(--serif); font-weight: 600;
+  font-size: 18px; color: var(--ink);
+  margin-bottom: 10px; letter-spacing: -0.01em;
+}
+.how-desc {
+  font-size: 13px; color: var(--ink-mid);
+  line-height: 1.85;
+}
+
+/* ── PROTECTION ── */
+.protect-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 80px;
+  align-items: center;
+}
+.protect-visual {
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  border-radius: 6px; padding: 32px;
+}
+.protect-record {
+  border: 1px solid var(--rule);
+  border-radius: 4px; background: white;
+  padding: 20px; margin-bottom: 12px;
+}
+.protect-record-header {
+  display: flex; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.protect-record-title {
+  font-family: var(--serif); font-size: 13px;
+  font-weight: 600; color: var(--ink);
+}
+.protect-record-date {
+  font-size: 11px; color: var(--ink-light);
+}
+.protect-hash {
+  font-family: 'Courier New', monospace;
+  font-size: 10px; color: var(--ink-light);
+  background: var(--paper-2);
+  padding: 6px 10px; border-radius: 2px;
+  margin-bottom: 10px; word-break: break-all;
+}
+.protect-verified {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--green);
+}
+.protect-features { list-style: none; }
+.protect-features li {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 16px 0; border-bottom: 1px solid var(--rule);
+  font-size: 14px; color: var(--ink-mid); line-height: 1.7;
+}
+.protect-features li:last-child { border-bottom: none; }
+.protect-feat-icon {
+  width: 24px; height: 24px; flex-shrink: 0;
+  border: 1px solid var(--rule-dark);
+  border-radius: 2px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; color: var(--ink-mid); margin-top: 2px;
+}
+
+/* ── NOTICE ── */
+.notice-list { list-style: none; }
+.notice-item {
+  display: flex; align-items: baseline;
+  gap: 24px; padding: 20px 0;
+  border-bottom: 1px solid var(--rule);
+  text-decoration: none; color: inherit;
+  cursor: pointer; transition: opacity 0.2s;
+}
+.notice-item:hover { opacity: 0.7; }
+.notice-date {
+  font-size: 11px; color: var(--ink-light);
+  letter-spacing: 0.06em; min-width: 80px; flex-shrink: 0;
+}
+.notice-badge {
+  font-size: 10px; color: var(--green);
+  background: var(--green-lt);
+  padding: 2px 8px; border-radius: 2px;
+  letter-spacing: 0.08em; flex-shrink: 0;
+}
+.notice-title {
+  font-size: 14px; color: var(--ink); flex: 1;
+  letter-spacing: -0.01em;
+}
+.notice-arrow { font-size: 12px; color: var(--ink-light); }
+
+/* ── CTA ── */
+.cta-section {
+  background: var(--ink);
+  padding: 96px 80px;
+  text-align: center;
+}
+.cta-eyebrow {
+  font-size: 11px; color: rgba(255,255,255,0.35);
+  letter-spacing: 0.22em; margin-bottom: 20px; display: block;
+}
+.cta-title {
+  font-family: var(--serif); font-weight: 700;
+  font-size: clamp(28px, 3.5vw, 46px);
+  color: white; letter-spacing: -0.03em;
+  line-height: 1.2; margin-bottom: 12px;
+}
+.cta-sub {
+  font-family: var(--serif); font-weight: 300;
+  font-size: clamp(22px, 2.5vw, 36px);
+  color: rgba(255,255,255,0.4); letter-spacing: -0.02em;
+  margin-bottom: 36px;
+}
+.cta-desc {
+  font-size: 14px; color: rgba(255,255,255,0.5);
+  margin-bottom: 40px; line-height: 1.85;
+}
+.btn-white {
+  background: white; color: var(--ink);
+  padding: 14px 32px; border-radius: 3px;
+  font-family: var(--sans); font-size: 13px;
+  letter-spacing: 0.06em; text-decoration: none;
+  border: none; cursor: pointer;
+  transition: opacity 0.2s; display: inline-block;
+}
+.btn-white:hover { opacity: 0.9; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 48px 80px;
+  display: flex; justify-content: space-between;
+  align-items: flex-start; flex-wrap: wrap; gap: 32px;
+}
+.footer-logo {
+  font-family: var(--serif); font-weight: 700;
+  font-size: 16px; color: var(--ink);
+  letter-spacing: -0.01em; margin-bottom: 8px;
+}
+.footer-desc {
+  font-size: 12px; color: var(--ink-light);
+  line-height: 1.7; max-width: 260px;
+}
+.footer-links { display: flex; gap: 40px; flex-wrap: wrap; }
+.footer-col h4 {
+  font-size: 11px; color: var(--ink);
+  letter-spacing: 0.14em; margin-bottom: 14px; font-weight: 500;
+}
+.footer-col a {
+  display: block; font-size: 12px; color: var(--ink-light);
+  text-decoration: none; margin-bottom: 8px;
+  transition: color 0.2s;
+}
+.footer-col a:hover { color: var(--ink); }
+.footer-bottom {
+  padding: 20px 80px;
+  border-top: 1px solid var(--rule);
+  display: flex; justify-content: space-between;
+  align-items: center; flex-wrap: wrap; gap: 8px;
+}
+.footer-bottom span {
+  font-size: 11px; color: var(--ink-light); letter-spacing: 0.04em;
+}
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0; transform: translateY(20px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  nav .nav-links a:not(.nav-cta) { display: none; }
+  .hero { grid-template-columns: 1fr; padding: 60px 24px; min-height: auto; }
+  .hero-right { display: none; }
+  section { padding: 64px 24px; }
+  .how-grid { grid-template-columns: 1fr; }
+  .how-item { border-right: none; border-bottom: 1px solid var(--rule); }
+  .how-item:last-child { border-bottom: none; }
+  .protect-layout { grid-template-columns: 1fr; gap: 40px; }
+  .cta-section { padding: 64px 24px; }
+  footer { padding: 40px 24px; }
+  .footer-bottom { padding: 16px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Ideabl <span>· 아이디어블</span></a>
+  <div class="nav-links">
+    <a href="#creators">창작자</a>
+    <a href="#how">이용 방법</a>
+    <a href="#protect">보호 체계</a>
+    <a href="#notice">공지사항</a>
+    <a href="#register" class="nav-cta">지금 등록하기</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="border-bottom:1px solid var(--rule);">
+  <div class="hero-left">
+    <div class="hero-eyebrow">
+      <div class="hero-eyebrow-line"></div>
+      <span>AI 창작물 IP 플랫폼</span>
+    </div>
+    <h1 class="hero-h1">아이디어를<br>지키고</h1>
+    <div class="hero-h1-sub">세상과 잇다</div>
+    <p class="hero-desc">
+      머릿속의 아이디어, AI로 만든 창작물,<br>
+      당신이 가진 모든 능력을 여기서 등록하고<br>
+      기업과 직접 연결되세요.
+    </p>
+    <div class="hero-btns">
+      <a href="#register" class="btn-primary">창작자 등록하기</a>
+      <a href="#creators" class="btn-ghost">창작자 둘러보기</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <svg class="hero-ink-svg" viewBox="0 0 200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M100 20 Q115 90 98 180 Q88 260 105 380" stroke="#1A1A1A" stroke-width="22" stroke-linecap="round"/>
+      <path d="M100 20 Q138 55 128 115 Q118 160 100 180" stroke="#1A1A1A" stroke-width="10" stroke-linecap="round"/>
+      <path d="M100 180 Q72 215 76 265 Q80 305 105 380" stroke="#1A1A1A" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="100" cy="17" rx="7" ry="7" fill="#1A1A1A"/>
+    </svg>
+    <div class="hero-stat-card">
+      <div class="stat-row">
+        <div class="stat-item">
+          <div class="stat-num">247</div>
+          <div class="stat-label">등록 창작자</div>
+        </div>
+        <div class="stat-item" style="text-align:right;">
+          <div class="stat-num">1,084</div>
+          <div class="stat-label">등록 창작물</div>
+        </div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-row" style="margin-bottom:16px;">
+        <div class="stat-item">
+          <div class="stat-num">38</div>
+          <div class="stat-label">매칭 성사</div>
+        </div>
+        <div class="stat-item" style="text-align:right;">
+          <div class="stat-num">5</div>
+          <div class="stat-label">파트너 기업</div>
+        </div>
+      </div>
+      <div class="hero-badge">
+        <div class="badge-dot"></div>
+        베타 서비스 운영 중
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CREATORS -->
+<section id="creators">
+  <div class="creator-header reveal">
+    <div>
+      <div class="section-eyebrow">
+        <div class="section-eyebrow-line"></div>
+        <span>CREATORS</span>
+      </div>
+      <h2 class="section-title">지금 주목받는 <span class="section-title-light">창작자들</span></h2>
+    </div>
+    <a href="#" class="btn-ghost" style="font-size:12px; padding:9px 20px;">전체 보기 →</a>
+  </div>
+  <div class="creator-grid">
+    <a class="creator-card reveal" href="#" style="transition-delay:0.05s;">
+      <div class="creator-card-thumb">
+        <svg class="thumb-pattern" viewBox="0 0 220 140"><path d="M0 70 Q55 20 110 70 Q165 120 220 70" stroke="#C8C5BC" stroke-width="1" fill="none"/><path d="M0 50 Q55 10 110 50 Q165 90 220 50" stroke="#C8C5BC" stroke-width="0.6" fill="none" opacity="0.5"/><path d="M0 90 Q55 130 110 90 Q165 50 220 90" stroke="#C8C5BC" stroke-width="0.6" fill="none" opacity="0.5"/></svg>
+        <div class="thumb-icon">編</div>
+      </div>
+      <div class="creator-card-body">
+        <div class="creator-card-category">MOTION · 영상편집</div>
+        <div class="creator-card-name">릴스 & 숏츠 편집</div>
+        <div class="creator-card-desc">AI 자막 + 사운드 싱크 특화. 브랜드 릴스 제작 경험 3년.</div>
+      </div>
+      <div class="creator-card-footer">
+        <span class="creator-card-tag">등록 창작물 12건</span>
+        <span class="creator-card-arrow">→</span>
+      </div>
+    </a>
+    <a class="creator-card reveal" href="#" style="transition-delay:0.1s;">
+      <div class="creator-card-thumb">
+        <svg class="thumb-pattern" viewBox="0 0 220 140"><circle cx="110" cy="70" r="40" stroke="#C8C5BC" stroke-width="1" fill="none"/><circle cx="110" cy="70" r="25" stroke="#C8C5BC" stroke-width="0.6" fill="none" opacity="0.5"/><circle cx="110" cy="70" r="10" stroke="#C8C5BC" stroke-width="0.6" fill="none" opacity="0.4"/><line x1="30" y1="70" x2="190" y2="70" stroke="#C8C5BC" stroke-width="0.5"/><line x1="110" y1="10" x2="110" y2="130" stroke="#C8C5BC" stroke-width="0.5"/></svg>
+        <div class="thumb-icon">音</div>
+      </div>
+      <div class="creator-card-body">
+        <div class="creator-card-category">SOUND · 음향디자인</div>
+        <div class="creator-card-name">AI 사운드 디자인</div>
+        <div class="creator-card-desc">AI 음악 생성 + 믹싱. 광고·숏폼 BGM 납품 다수.</div>
+      </div>
+      <div class="creator-card-footer">
+        <span class="creator-card-tag">등록 창작물 8건</span>
+        <span class="creator-card-arrow">→</span>
+      </div>
+    </a>
+    <a class="creator-card reveal" href="#" style="transition-delay:0.15s;">
+      <div class="creator-card-thumb">
+        <svg class="thumb-pattern" viewBox="0 0 220 140"><rect x="30" y="30" width="70" height="40" stroke="#C8C5BC" stroke-width="1" fill="none"/><rect x="120" y="30" width="70" height="40" stroke="#C8C5BC" stroke-width="1" fill="none"/><rect x="30" y="80" width="160" height="30" stroke="#C8C5BC" stroke-width="0.6" fill="none" opacity="0.5"/></svg>
+        <div class="thumb-icon">策</div>
+      </div>
+      <div class="creator-card-body">
+        <div class="creator-card-category">MARKETING · 콘텐츠기획</div>
+        <div class="creator-card-name">퍼포먼스 마케팅</div>
+        <div class="creator-card-desc">데이터 기반 콘텐츠 전략. AI 카피라이팅 + A/B테스트.</div>
+      </div>
+      <div class="creator-card-footer">
+        <span class="creator-card-tag">등록 창작물 15건</span>
+        <span class="creator-card-arrow">→</span>
+      </div>
+    </a>
+    <a class="creator-card reveal" href="#" style="transition-delay:0.2s;">
+      <div class="creator-card-thumb">
+        <svg class="thumb-pattern" viewBox="0 0 220 140"><path d="M40 100 L80 40 L120 80 L160 20 L200 60" stroke="#C8C5BC" stroke-width="1" fill="none"/><path d="M40 110 L80 50 L120 90 L160 30 L200 70" stroke="#C8C5BC" stroke-width="0.5" fill="none" opacity="0.4"/></svg>
+        <div class="thumb-icon">案</div>
+      </div>
+      <div class="creator-card-body">
+        <div class="creator-card-category">IDEA · 아이디어기획</div>
+        <div class="creator-card-name">제품 아이디어 기획</div>
+        <div class="creator-card-desc">소비재 신제품 아이디어 전문. 특허 출원 경험 보유.</div>
+      </div>
+      <div class="creator-card-footer">
+        <span class="creator-card-tag">등록 창작물 6건</span>
+        <span class="creator-card-arrow">→</span>
+      </div>
+    </a>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section id="how" style="background:var(--paper-2);">
+  <div class="reveal">
+    <div class="section-eyebrow">
+      <div class="section-eyebrow-line"></div>
+      <span>HOW IT WORKS</span>
+    </div>
+    <h2 class="section-title" style="margin-bottom:48px;">세 단계면 충분합니다</h2>
+  </div>
+  <div class="how-grid reveal">
+    <div class="how-item">
+      <span class="how-num">01</span>
+      <div class="how-title">창작물 등록</div>
+      <p class="how-desc">아이디어, AI 창작물, 본인의 능력을 자유 양식으로 등록합니다. 게시 즉시 타임스탬프가 자동 발행됩니다.</p>
+    </div>
+    <div class="how-item">
+      <span class="how-num">02</span>
+      <div class="how-title">자동 보호</div>
+      <p class="how-desc">등록과 동시에 SHA-256 해시값과 게시 일시가 기록됩니다. 분쟁 시 선행 공개의 근거 자료로 활용됩니다.</p>
+    </div>
+    <div class="how-item">
+      <span class="how-num">03</span>
+      <div class="how-title">기업과 연결</div>
+      <p class="how-desc">관심 있는 기업이 직접 알림을 보내거나 연락합니다. 판매, 라이선스, 협업 방식을 자유롭게 선택하세요.</p>
+    </div>
+  </div>
+</section>
+
+<!-- PROTECTION -->
+<section id="protect">
+  <div class="protect-layout">
+    <div class="reveal">
+      <div class="section-eyebrow">
+        <div class="section-eyebrow-line"></div>
+        <span>IP PROTECTION</span>
+      </div>
+      <h2 class="section-title">등록 즉시<br><span class="section-title-light">보호가 시작됩니다</span></h2>
+      <p class="section-desc">AI 창작물은 현행 저작권법의 보호 사각지대에 있습니다. Ideabl은 자체 타임스탬프 시스템으로 창작자의 권리를 지킵니다.</p>
+      <ul class="protect-features">
+        <li>
+          <div class="protect-feat-icon">①</div>
+          <div><strong style="color:var(--ink);font-weight:500;">게시 즉시 해시값 생성</strong><br>콘텐츠 본문을 SHA-256으로 암호화 기록합니다.</div>
+        </li>
+        <li>
+          <div class="protect-feat-icon">②</div>
+          <div><strong style="color:var(--ink);font-weight:500;">타임스탬프 증명서 발행</strong><br>PDF 다운로드로 언제든 증거 자료를 확보합니다.</div>
+        </li>
+        <li>
+          <div class="protect-feat-icon">③</div>
+          <div><strong style="color:var(--ink);font-weight:500;">도용 신고 시 자동 분석</strong><br>선후 관계를 시스템이 자동 분석해 대응 절차를 안내합니다.</div>
+        </li>
+      </ul>
+    </div>
+    <div class="protect-visual reveal" style="transition-delay:0.15s;">
+      <div style="font-size:11px;color:var(--ink-light);letter-spacing:0.14em;margin-bottom:16px;">타임스탬프 증명서 예시</div>
+      <div class="protect-record">
+        <div class="protect-record-header">
+          <div class="protect-record-title">AI 숏폼 편집 기법 — 리듬 컷 시스템</div>
+          <div class="protect-record-date">2026.06.16 14:32 KST</div>
+        </div>
+        <div class="protect-hash">SHA-256: 3a9f7c2e1b84d56f0...c8a2</div>
+        <div class="protect-verified">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#1D7A5F" stroke-width="1"/><path d="M3.5 6l1.8 1.8 3.2-3.6" stroke="#1D7A5F" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          선행 공개 기록 확인됨
+        </div>
+      </div>
+      <div class="protect-record" style="margin-bottom:0;">
+        <div class="protect-record-header">
+          <div class="protect-record-title">제품 포장 재활용 아이디어</div>
+          <div class="protect-record-date">2026.05.28 09:11 KST</div>
+        </div>
+        <div class="protect-hash">SHA-256: f20e4b71a93c58d1...7f1e</div>
+        <div class="protect-verified">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="#1D7A5F" stroke-width="1"/><path d="M3.5 6l1.8 1.8 3.2-3.6" stroke="#1D7A5F" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          선행 공개 기록 확인됨
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NOTICE -->
+<section id="notice" style="background:var(--paper-2);">
+  <div class="reveal">
+    <div class="section-eyebrow">
+      <div class="section-eyebrow-line"></div>
+      <span>NOTICE</span>
+    </div>
+    <h2 class="section-title" style="margin-bottom:36px;">공지사항</h2>
+  </div>
+  <ul class="notice-list reveal">
+    <li class="notice-item">
+      <span class="notice-date">2026.06.16</span>
+      <span class="notice-badge">NEW</span>
+      <span class="notice-title">Ideabl 베타 서비스 정식 오픈 안내</span>
+      <span class="notice-arrow">→</span>
+    </li>
+    <li class="notice-item">
+      <span class="notice-date">2026.06.14</span>
+      <span class="notice-badge">안내</span>
+      <span class="notice-title">AI 창작물 보호 정책 v1.0 공개</span>
+      <span class="notice-arrow">→</span>
+    </li>
+    <li class="notice-item">
+      <span class="notice-date">2026.06.10</span>
+      <span class="notice-badge">안내</span>
+      <span class="notice-title">창작자 등록 방법 및 카테고리 안내</span>
+      <span class="notice-arrow">→</span>
+    </li>
+    <li class="notice-item">
+      <span class="notice-date">2026.06.01</span>
+      <span class="notice-badge">정책</span>
+      <span class="notice-title">개인정보처리방침 최초 시행 안내</span>
+      <span class="notice-arrow">→</span>
+    </li>
+  </ul>
+</section>
+
+<!-- CTA -->
+<div class="cta-section" id="register">
+  <span class="cta-eyebrow">JOIN IDEABL</span>
+  <h2 class="cta-title">당신의 아이디어</h2>
+  <div class="cta-sub">지금 세상과 만날 준비가 됐나요</div>
+  <p class="cta-desc">등록은 무료입니다. 창작물을 올리는 순간부터 보호가 시작됩니다.</p>
+  <a href="#" class="btn-white">무료로 창작자 등록하기</a>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Ideabl · 아이디어블</div>
+    <p class="footer-desc">AI 창작물과 아이디어를 보호하고<br>기업과 창작자를 연결하는 플랫폼.</p>
+  </div>
+  <div class="footer-links">
+    <div class="footer-col">
+      <h4>서비스</h4>
+      <a href="#">창작자 등록</a>
+      <a href="#">창작물 둘러보기</a>
+      <a href="#">이용 방법</a>
+    </div>
+    <div class="footer-col">
+      <h4>정책</h4>
+      <a href="#">AI 창작물 보호 정책</a>
+      <a href="#">개인정보처리방침</a>
+      <a href="#">이용약관</a>
+    </div>
+    <div class="footer-col">
+      <h4>안내</h4>
+      <a href="#">공지사항</a>
+      <a href="#">자주 묻는 질문</a>
+      <a href="#">문의하기</a>
+    </div>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <span>© 2026 Ideabl. All rights reserved.</span>
+  <span>본 서비스는 베타 운영 중입니다.</span>
+</div>
+
+<script>
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(el => {
+    if (el.isIntersecting) {
+      el.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
