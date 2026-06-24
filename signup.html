@@ -10,302 +10,212 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --ink: #1A1A1A; --ink-mid: #555552; --ink-light: #8A8880;
-  --paper: #FAFAF8; --paper-2: #F3F1EB; --rule: #E0DDD5; --rule-dark: #C8C5BC;
-  --green: #1D7A5F; --green-lt: #E4F0EC; --red: #B91C1C; --red-lt: #FEF2F2;
-  --blue-lt: #EFF6FF; --blue: #1D4ED8; --blue-border: #BFDBFE;
-  --serif: 'Noto Serif KR', serif; --sans: 'Noto Sans KR', sans-serif;
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#1A1A1A;--ink-mid:#555552;--ink-light:#8A8880;
+  --paper:#FAFAF8;--paper-2:#F3F1EB;--rule:#E0DDD5;--rule-dark:#C8C5BC;
+  --green:#1D7A5F;--green-lt:#E4F0EC;--red:#B91C1C;--red-lt:#FEF2F2;
+  --serif:'Noto Serif KR',serif;--sans:'Noto Sans KR',sans-serif;
 }
-body { font-family: var(--sans); background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
-nav { border-bottom: 1px solid var(--rule); padding: 0 48px; height: 60px; display: flex; align-items: center; }
-.nav-logo { font-family: var(--serif); font-weight: 700; font-size: 17px; color: var(--ink); text-decoration: none; }
-.nav-logo span { color: var(--ink-light); font-weight: 300; font-size: 14px; }
-.page-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 24px; }
-.card { width: 100%; max-width: 460px; background: white; border: 1px solid var(--rule); border-radius: 8px; padding: 48px 44px; }
-.card-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
-.card-eyebrow-line { width: 20px; height: 1px; background: var(--ink-light); }
-.card-eyebrow span { font-size: 10px; color: var(--ink-light); letter-spacing: 0.2em; }
-.card-title { font-family: var(--serif); font-weight: 700; font-size: 26px; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 28px; }
+body{font-family:var(--sans);background:var(--paper);color:var(--ink);min-height:100vh;display:flex;flex-direction:column}
+nav{border-bottom:1px solid var(--rule);padding:0 48px;height:60px;display:flex;align-items:center}
+.nav-logo{font-family:var(--serif);font-weight:700;font-size:17px;color:var(--ink);text-decoration:none}
+.nav-logo span{color:var(--ink-light);font-weight:300;font-size:14px}
+.page-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:60px 24px}
+.card{width:100%;max-width:460px;background:white;border:1px solid var(--rule);border-radius:8px;padding:48px 44px}
+.eyebrow{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.eyebrow-line{width:20px;height:1px;background:var(--ink-light)}
+.eyebrow span{font-size:10px;color:var(--ink-light);letter-spacing:.2em}
+.title{font-family:var(--serif);font-weight:700;font-size:26px;color:var(--ink);letter-spacing:-.02em;margin-bottom:28px}
+.msg{padding:11px 14px;border-radius:4px;font-size:13px;margin-bottom:16px;line-height:1.65;display:none}
+.err{display:block;background:var(--red-lt);border:1px solid #fecaca;color:var(--red)}
+.suc{display:block;background:var(--green-lt);border:1px solid #6ee7b7;color:var(--green)}
+.inf{display:block;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8}
+.f{margin-bottom:18px}
+.f label{display:block;font-size:12px;color:var(--ink-mid);letter-spacing:.06em;margin-bottom:7px}
+.req{color:var(--red);margin-left:2px}
+.f input,.f select{width:100%;height:44px;padding:0 14px;border:1px solid var(--rule-dark);border-radius:4px;font-family:var(--sans);font-size:14px;color:var(--ink);background:var(--paper);outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
+.f input:focus,.f select:focus{border-color:var(--ink)}
+.f input::placeholder{color:var(--ink-light)}
+.f input:disabled{background:var(--paper-2);color:var(--ink-light)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px}
+.row2 .f{margin-bottom:0}
 
-/* 메시지 */
-.msg { padding: 11px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; line-height: 1.65; display: none; }
-.msg.show-error  { display: block; background: var(--red-lt);  border: 1px solid #FECACA; color: var(--red); }
-.msg.show-success{ display: block; background: var(--green-lt);border: 1px solid #6EE7B7; color: var(--green); }
-.msg.show-info   { display: block; background: var(--blue-lt); border: 1px solid var(--blue-border); color: var(--blue); }
+/* 이메일 */
+.email-wrap{display:flex;gap:8px}
+.email-wrap input{flex:1;min-width:0}
+#btn-send{
+  height:44px;padding:0 14px;flex-shrink:0;
+  border-radius:4px;font-family:var(--sans);font-size:12px;
+  letter-spacing:.03em;white-space:nowrap;transition:all .2s;
+  background:var(--paper-2);color:var(--ink-light);
+  border:1px solid var(--rule-dark);cursor:default;
+}
+#btn-send.on{background:var(--ink);color:white;border-color:var(--ink);cursor:pointer}
+#btn-send.on:hover{background:#333}
 
-/* 필드 */
-.field { margin-bottom: 18px; }
-.field label { display: block; font-size: 12px; color: var(--ink-mid); letter-spacing: 0.06em; margin-bottom: 7px; }
-.req { color: var(--red); margin-left: 2px; }
-.field input, .field select {
-  width: 100%; height: 44px; padding: 0 14px;
-  border: 1px solid var(--rule-dark); border-radius: 4px;
-  font-family: var(--sans); font-size: 14px; color: var(--ink);
-  background: var(--paper); outline: none; transition: border-color 0.2s;
-  -webkit-appearance: none; appearance: none;
+/* 코드 영역 */
+#code-box{
+  display:none;margin-top:10px;
+  background:var(--paper-2);border:1px solid var(--rule);
+  border-radius:6px;padding:16px;
 }
-.field input:focus, .field select:focus { border-color: var(--ink); }
-.field input::placeholder { color: var(--ink-light); }
-.field input:disabled { background: var(--paper-2); color: var(--ink-light); }
-.field-2col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 18px; }
-.field-2col .field { margin-bottom: 0; }
-
-/* 이메일 인증 */
-.email-wrap { display: flex; gap: 8px; }
-.email-wrap input { flex: 1; min-width: 0; }
-#btn-send-code {
-  height: 44px; padding: 0 14px; flex-shrink: 0;
-  background: var(--paper-2); color: var(--ink-light);
-  border: 1px solid var(--rule-dark); border-radius: 4px;
-  font-family: var(--sans); font-size: 12px; letter-spacing: 0.03em;
-  cursor: not-allowed; white-space: nowrap; transition: all 0.2s;
+.code-label{font-size:12px;color:var(--ink-mid);margin-bottom:10px}
+.code-row{display:flex;gap:8px}
+#code-in{
+  flex:1;height:48px;padding:0 12px;
+  border:2px solid var(--ink);border-radius:4px;
+  font-family:var(--sans);font-size:22px;font-weight:700;
+  letter-spacing:.3em;text-align:center;color:var(--ink);
+  background:white;outline:none;
 }
-#btn-send-code.active {
-  background: var(--ink); color: white;
-  border-color: var(--ink); cursor: pointer;
+#code-in::placeholder{font-size:13px;font-weight:400;letter-spacing:0;color:var(--ink-light)}
+#btn-chk{
+  height:48px;padding:0 16px;flex-shrink:0;
+  background:var(--green);color:white;border:none;
+  border-radius:4px;font-family:var(--sans);font-size:13px;cursor:pointer;
 }
-#btn-send-code.active:hover { background: #333; }
-#btn-send-code:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* 코드 입력 영역 */
-#code-section {
-  display: none;
-  background: var(--paper-2); border: 1px solid var(--rule);
-  border-radius: 6px; padding: 16px; margin-top: 8px;
-}
-.code-label { font-size: 12px; color: var(--ink-mid); margin-bottom: 8px; letter-spacing: 0.04em; }
-.code-row { display: flex; gap: 8px; }
-#code-input {
-  flex: 1; height: 48px; padding: 0 14px;
-  border: 1px solid var(--rule-dark); border-radius: 4px;
-  font-family: var(--sans); font-size: 20px; font-weight: 700;
-  letter-spacing: 0.3em; text-align: center; color: var(--ink);
-  background: white; outline: none; transition: border-color 0.2s;
-}
-#code-input:focus { border-color: var(--ink); }
-#code-input::placeholder { font-size: 13px; font-weight: 400; letter-spacing: 0; color: var(--ink-light); }
-#btn-verify-code {
-  height: 48px; padding: 0 18px; flex-shrink: 0;
-  background: var(--green); color: white; border: none;
-  border-radius: 4px; font-family: var(--sans); font-size: 13px;
-  cursor: pointer; transition: background 0.2s;
-}
-#btn-verify-code:hover { background: #155e4a; }
-.timer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
-#timer-text { font-size: 12px; color: var(--red); font-weight: 500; }
-#resend-btn { font-size: 12px; color: var(--ink-light); background: none; border: none; cursor: pointer; text-decoration: underline; }
-#resend-btn:hover { color: var(--ink); }
-
-/* 인증완료 배지 */
-#verified-badge {
-  display: none; align-items: center; gap: 6px;
-  font-size: 12px; color: var(--green); margin-top: 8px;
-  padding: 7px 12px; background: var(--green-lt);
-  border-radius: 4px; border: 1px solid #6EE7B7;
+#btn-chk:hover{background:#155e4a}
+#timer{font-size:12px;color:var(--red);font-weight:500;margin-top:7px}
+#done-badge{
+  display:none;align-items:center;gap:6px;
+  font-size:12px;color:var(--green);margin-top:8px;
+  padding:7px 12px;background:var(--green-lt);
+  border-radius:4px;border:1px solid #6ee7b7;
 }
 
 /* 약관 */
-.agree-wrap { border: 1px solid var(--rule); border-radius: 6px; overflow: hidden; margin-bottom: 20px; }
-.agree-all {
-  display: flex; align-items: center; gap: 10px;
-  padding: 13px 16px; background: var(--paper-2);
-  border-bottom: 1px solid var(--rule);
-  cursor: pointer; user-select: none;
+.agree-box{border:1px solid var(--rule);border-radius:6px;overflow:hidden;margin-bottom:20px}
+.a-all{
+  display:flex;align-items:center;gap:10px;
+  padding:13px 16px;background:var(--paper-2);
+  border-bottom:1px solid var(--rule);
+  cursor:pointer;user-select:none;
 }
-.agree-all span { font-size: 13px; font-weight: 600; color: var(--ink); }
-.agree-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 11px 16px; cursor: pointer; user-select: none;
-  border-bottom: 1px solid var(--rule);
-  transition: background 0.15s;
+.a-all span{font-size:13px;font-weight:600;color:var(--ink)}
+.a-row{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 16px;cursor:pointer;user-select:none;
+  border-bottom:1px solid var(--rule);transition:background .15s;
 }
-.agree-row:last-child { border-bottom: none; }
-.agree-row:hover { background: var(--paper-2); }
-.agree-row span { font-size: 13px; color: var(--ink-mid); line-height: 1.4; }
-input[type="checkbox"] { width: 17px; height: 17px; flex-shrink: 0; accent-color: var(--ink); cursor: pointer; }
-.badge-req { font-size: 10px; color: var(--red); background: var(--red-lt); padding: 1px 6px; border-radius: 2px; margin-right: 5px; }
-.badge-opt { font-size: 10px; color: var(--ink-light); background: white; border: 1px solid var(--rule); padding: 1px 6px; border-radius: 2px; margin-right: 5px; }
+.a-row:last-child{border-bottom:none}
+.a-row:hover{background:var(--paper-2)}
+.a-row span{font-size:13px;color:var(--ink-mid)}
+input[type=checkbox]{width:17px;height:17px;flex-shrink:0;accent-color:var(--ink);cursor:pointer}
+.br{font-size:10px;color:var(--red);background:var(--red-lt);padding:1px 6px;border-radius:2px;margin-right:5px}
+.bo{font-size:10px;color:var(--ink-light);background:white;border:1px solid var(--rule);padding:1px 6px;border-radius:2px;margin-right:5px}
 
-.btn-submit {
-  width: 100%; height: 50px; background: var(--ink); color: white;
-  border: none; border-radius: 4px; font-family: var(--sans);
-  font-size: 14px; letter-spacing: 0.06em; cursor: pointer;
-  transition: background 0.2s; margin-top: 4px;
-}
-.btn-submit:hover { background: #333; }
-.btn-submit:disabled { background: var(--rule-dark); cursor: not-allowed; }
-.card-footer { text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-light); }
-.card-footer a { color: var(--ink); font-weight: 500; text-decoration: none; }
+.btn-go{width:100%;height:50px;background:var(--ink);color:white;border:none;border-radius:4px;font-family:var(--sans);font-size:14px;letter-spacing:.06em;cursor:pointer;transition:background .2s;margin-top:4px}
+.btn-go:hover{background:#333}
+.btn-go:disabled{background:var(--rule-dark);cursor:not-allowed}
+.foot{text-align:center;margin-top:20px;padding-top:18px;border-top:1px solid var(--rule);font-size:13px;color:var(--ink-light)}
+.foot a{color:var(--ink);font-weight:500;text-decoration:none}
 </style>
 </head>
 <body>
-<nav>
-  <a href="index.html" class="nav-logo">Ideabl <span>· 아이디어블</span></a>
-</nav>
+<nav><a href="index.html" class="nav-logo">Ideabl <span>· 아이디어블</span></a></nav>
 <div class="page-wrap">
-  <div class="card">
-    <div class="card-eyebrow">
-      <div class="card-eyebrow-line"></div>
-      <span>SIGN UP</span>
-    </div>
-    <div class="card-title">회원가입</div>
-    <div class="msg" id="msg"></div>
+<div class="card">
+  <div class="eyebrow"><div class="eyebrow-line"></div><span>SIGN UP</span></div>
+  <div class="title">회원가입</div>
+  <div class="msg" id="msg"></div>
 
-    <!-- 이름 -->
-    <div class="field">
-      <label>이름 (활동명) <span class="req">*</span></label>
-      <input type="text" id="name" placeholder="실명 또는 활동명">
-    </div>
+  <div class="f">
+    <label>이름 (활동명) <span class="req">*</span></label>
+    <input type="text" id="name" placeholder="실명 또는 활동명">
+  </div>
 
-    <!-- 이메일 + 인증 -->
-    <div class="field">
-      <label>이메일 <span class="req">*</span></label>
-      <div class="email-wrap">
-        <input type="email" id="email" placeholder="example@email.com"
-          autocomplete="email" oninput="onEmailInput()">
-        <button id="btn-send-code" onclick="sendCode()" disabled>인증코드 발송</button>
-      </div>
-      <!-- 코드 입력 영역 (처음엔 숨김) -->
-      <div id="code-section">
-        <div class="code-label">이메일로 발송된 8자리 코드를 입력해주세요</div>
-        <div class="code-row">
-          <input type="text" id="code-input" placeholder="코드 8자리" maxlength="8" inputmode="numeric">
-          <button id="btn-verify-code" onclick="verifyCode()">확인</button>
-        </div>
-        <div class="timer-row">
-          <span id="timer-text"></span>
-          <button id="resend-btn" onclick="sendCode()" style="display:none;">재발송</button>
-        </div>
-      </div>
-      <!-- 인증완료 배지 -->
-      <div id="verified-badge">
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-          <circle cx="7" cy="7" r="6" stroke="#1D7A5F" stroke-width="1.3"/>
-          <path d="M4 7l2.2 2.2 3.8-4.4" stroke="#1D7A5F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        이메일 인증 완료
-      </div>
+  <div class="f">
+    <label>이메일 <span class="req">*</span></label>
+    <div class="email-wrap">
+      <input type="email" id="email" placeholder="example@email.com" autocomplete="email">
+      <button id="btn-send" onclick="sendCode()">인증코드 발송</button>
     </div>
-
-    <!-- 비밀번호 -->
-    <div class="field-2col">
-      <div class="field">
-        <label>비밀번호 <span class="req">*</span></label>
-        <input type="password" id="pw" placeholder="8자 이상" autocomplete="new-password">
+    <div id="code-box">
+      <div class="code-label">📧 이메일로 발송된 8자리 코드를 입력해주세요</div>
+      <div class="code-row">
+        <input type="text" id="code-in" placeholder="00000000" maxlength="8" inputmode="numeric">
+        <button id="btn-chk" onclick="checkCode()">확인</button>
       </div>
-      <div class="field">
-        <label>비밀번호 확인 <span class="req">*</span></label>
-        <input type="password" id="pw2" placeholder="동일하게 입력" autocomplete="new-password">
-      </div>
+      <div id="timer"></div>
     </div>
-
-    <!-- 유형 -->
-    <div class="field">
-      <label>유형 <span class="req">*</span></label>
-      <select id="user-type">
-        <option value="">선택해주세요</option>
-        <option value="individual">개인 창작자</option>
-        <option value="freelancer">프리랜서</option>
-        <option value="company">기업 · 사업자</option>
-      </select>
-    </div>
-
-    <!-- 활동분야 -->
-    <div class="field">
-      <label>활동 분야</label>
-      <select id="field-type">
-        <option value="">선택 (선택사항)</option>
-        <option>영상편집 · 모션</option>
-        <option>음악 · 사운드</option>
-        <option>마케팅 · 기획</option>
-        <option>디자인 · 일러스트</option>
-        <option>AI 창작물</option>
-        <option>아이디어 · 발명</option>
-        <option>글쓰기 · 카피라이팅</option>
-        <option>기타</option>
-      </select>
-    </div>
-
-    <!-- 약관 -->
-    <div class="agree-wrap">
-      <div class="agree-all" onclick="doToggleAll()">
-        <input type="checkbox" id="chk-all" onclick="event.stopPropagation()">
-        <span>전체 동의</span>
-      </div>
-      <div class="agree-row" onclick="doToggle('chk1')">
-        <input type="checkbox" id="chk1" onclick="event.stopPropagation(); doToggle('chk1')">
-        <span><span class="badge-req">필수</span>이용약관 동의</span>
-      </div>
-      <div class="agree-row" onclick="doToggle('chk2')">
-        <input type="checkbox" id="chk2" onclick="event.stopPropagation(); doToggle('chk2')">
-        <span><span class="badge-req">필수</span>개인정보 수집·이용 동의</span>
-      </div>
-      <div class="agree-row" onclick="doToggle('chk3')">
-        <input type="checkbox" id="chk3" onclick="event.stopPropagation(); doToggle('chk3')">
-        <span><span class="badge-req">필수</span>AI 창작물 보호 정책 동의</span>
-      </div>
-      <div class="agree-row" onclick="doToggle('chk4')">
-        <input type="checkbox" id="chk4" onclick="event.stopPropagation(); doToggle('chk4')">
-        <span><span class="badge-opt">선택</span>마케팅 수신 동의</span>
-      </div>
-    </div>
-
-    <button class="btn-submit" id="btn-submit" onclick="doSignup()">가입하기</button>
-    <div class="card-footer">
-      이미 계정이 있으신가요? <a href="login.html">로그인</a>
+    <div id="done-badge">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#1D7A5F" stroke-width="1.3"/><path d="M4 7l2.2 2.2 3.8-4.4" stroke="#1D7A5F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      이메일 인증 완료
     </div>
   </div>
+
+  <div class="row2">
+    <div class="f"><label>비밀번호 <span class="req">*</span></label><input type="password" id="pw" placeholder="8자 이상" autocomplete="new-password"></div>
+    <div class="f"><label>비밀번호 확인 <span class="req">*</span></label><input type="password" id="pw2" placeholder="동일하게 입력" autocomplete="new-password"></div>
+  </div>
+
+  <div class="f">
+    <label>유형 <span class="req">*</span></label>
+    <select id="utype"><option value="">선택해주세요</option><option value="individual">개인 창작자</option><option value="freelancer">프리랜서</option><option value="company">기업 · 사업자</option></select>
+  </div>
+  <div class="f">
+    <label>활동 분야</label>
+    <select id="ftype"><option value="">선택 (선택사항)</option><option>영상편집 · 모션</option><option>음악 · 사운드</option><option>마케팅 · 기획</option><option>디자인 · 일러스트</option><option>AI 창작물</option><option>아이디어 · 발명</option><option>글쓰기 · 카피라이팅</option><option>기타</option></select>
+  </div>
+
+  <div class="agree-box">
+    <div class="a-all" id="row-all">
+      <input type="checkbox" id="ca">
+      <span>전체 동의</span>
+    </div>
+    <div class="a-row" id="row-c1"><input type="checkbox" id="c1"><span><span class="br">필수</span>이용약관 동의</span></div>
+    <div class="a-row" id="row-c2"><input type="checkbox" id="c2"><span><span class="br">필수</span>개인정보 수집·이용 동의</span></div>
+    <div class="a-row" id="row-c3"><input type="checkbox" id="c3"><span><span class="br">필수</span>AI 창작물 보호 정책 동의</span></div>
+    <div class="a-row" id="row-c4"><input type="checkbox" id="c4"><span><span class="bo">선택</span>마케팅 수신 동의</span></div>
+  </div>
+
+  <button class="btn-go" id="btn-go" onclick="doSignup()">가입하기</button>
+  <div class="foot">이미 계정이 있으신가요? <a href="login.html">로그인</a></div>
+</div>
 </div>
 
 <script>
 emailjs.init('KUNFHIKD0ps5p7GOG');
-const SB_URL = 'https://tavdxdgubabokhklpeme.supabase.co';
-const SB_KEY = 'sb_publishable_g2jvs3vYubeC7vI5W9gs1g_BUabVfhX';
-const sb = window.supabase.createClient(SB_URL, SB_KEY);
+const SB = window.supabase.createClient(
+  'https://tavdxdgubabokhklpeme.supabase.co',
+  'sb_publishable_g2jvs3vYubeC7vI5W9gs1g_BUabVfhX'
+);
 
-let _code = '';
-let _verified = false;
-let _timer = null;
+let _code = '', _ok = false, _tid = null;
 
-/* 메시지 */
-function msg(text, type) {
+/* ── 메시지 ── */
+function M(txt, cls) {
   const el = document.getElementById('msg');
-  el.textContent = text;
-  el.className = 'msg show-' + type;
-}
-function clearMsg() {
-  document.getElementById('msg').className = 'msg';
+  el.textContent = txt;
+  el.className = 'msg ' + cls;
 }
 
-/* 이메일 입력 감지 → 버튼 활성화 */
-function onEmailInput() {
-  const val = document.getElementById('email').value.trim();
-  const btn = document.getElementById('btn-send-code');
-  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
-  if (valid) {
-    btn.classList.add('active');
-    btn.disabled = false;
-  } else {
-    btn.classList.remove('active');
-    btn.disabled = true;
+/* ── 이메일 입력 감지 (keyup + change + paste 모두 잡음) ── */
+function watchEmail() {
+  const el = document.getElementById('email');
+  const btn = document.getElementById('btn-send');
+  function check() {
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
+    if (ok) { btn.classList.add('on'); }
+    else    { btn.classList.remove('on'); }
   }
+  el.addEventListener('input',  check);
+  el.addEventListener('change', check);
+  el.addEventListener('keyup',  check);
+  el.addEventListener('paste',  () => setTimeout(check, 50));
 }
 
-/* 인증코드 발송 */
+/* ── 인증코드 발송 ── */
 async function sendCode() {
+  const btn = document.getElementById('btn-send');
+  if (!btn.classList.contains('on')) return;
+
   const email = document.getElementById('email').value.trim();
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    msg('올바른 이메일 주소를 입력해주세요.', 'error'); return;
-  }
-
-  const btn = document.getElementById('btn-send-code');
-  btn.disabled = true;
+  btn.classList.remove('on');
   btn.textContent = '발송 중...';
-  clearMsg();
+  M('', '');
 
-  /* 8자리 숫자 코드 생성 */
   _code = String(Math.floor(10000000 + Math.random() * 90000000));
 
   try {
@@ -313,116 +223,122 @@ async function sendCode() {
       email: email,
       passcode: _code
     });
-
-    /* 코드 입력 영역 표시 */
-    document.getElementById('code-section').style.display = 'block';
     document.getElementById('email').disabled = true;
-    btn.textContent = '발송완료';
-    btn.classList.remove('active');
-
-    /* 5분 타이머 시작 */
+    btn.textContent = '발송완료 ✓';
+    document.getElementById('code-box').style.display = 'block';
+    document.getElementById('code-in').focus();
     startTimer(300);
-    msg('인증코드 8자리를 입력하신 이메일로 발송했습니다.', 'info');
-
+    M('인증코드 8자리를 입력하신 이메일로 발송했습니다.', 'inf');
   } catch(e) {
     console.error(e);
-    msg('발송에 실패했습니다. 이메일 주소를 확인하고 다시 시도해주세요.', 'error');
-    btn.disabled = false;
+    M('발송 실패. 이메일 주소를 확인하고 다시 시도해주세요.', 'err');
+    btn.classList.add('on');
     btn.textContent = '인증코드 발송';
-    btn.classList.add('active');
+    document.getElementById('email').disabled = false;
   }
 }
 
-/* 타이머 */
+/* ── 타이머 ── */
 function startTimer(sec) {
-  clearInterval(_timer);
-  document.getElementById('resend-btn').style.display = 'none';
-  let remain = sec;
-  const el = document.getElementById('timer-text');
-  el.style.color = 'var(--red)';
-
+  clearInterval(_tid);
+  let r = sec;
+  const el = document.getElementById('timer');
   function tick() {
-    const m = String(Math.floor(remain / 60)).padStart(2,'0');
-    const s = String(remain % 60).padStart(2,'0');
-    el.textContent = '남은 시간 ' + m + ':' + s;
-    if (remain <= 0) {
-      clearInterval(_timer);
-      el.textContent = '인증 시간이 만료됐습니다.';
+    const m = String(Math.floor(r/60)).padStart(2,'0');
+    const s = String(r%60).padStart(2,'0');
+    el.textContent = '⏱ 남은 시간 ' + m + ':' + s;
+    el.style.color = r <= 30 ? '#ef4444' : '#B91C1C';
+    if (r <= 0) {
+      clearInterval(_tid);
+      el.textContent = '⚠ 인증 시간이 만료됐습니다. 다시 발송해주세요.';
       el.style.color = 'var(--ink-light)';
       _code = '';
-      document.getElementById('resend-btn').style.display = 'inline';
-      document.getElementById('btn-send-code').textContent = '재발송';
-      document.getElementById('btn-send-code').classList.add('active');
-      document.getElementById('btn-send-code').disabled = false;
+      const btn = document.getElementById('btn-send');
+      btn.textContent = '재발송';
+      btn.classList.add('on');
       document.getElementById('email').disabled = false;
     }
-    remain--;
+    r--;
   }
   tick();
-  _timer = setInterval(tick, 1000);
+  _tid = setInterval(tick, 1000);
 }
 
-/* 코드 확인 */
-function verifyCode() {
-  const input = document.getElementById('code-input').value.trim();
-  if (!input) { msg('인증코드를 입력해주세요.', 'error'); return; }
-  if (!_code)  { msg('인증 시간이 만료됐습니다. 재발송 후 다시 시도해주세요.', 'error'); return; }
-  if (input !== _code) { msg('인증코드가 일치하지 않습니다. 다시 확인해주세요.', 'error'); return; }
+/* ── 코드 확인 ── */
+function checkCode() {
+  const v = document.getElementById('code-in').value.trim();
+  if (!v)     { M('인증코드를 입력해주세요.', 'err'); return; }
+  if (!_code) { M('인증 시간이 만료됐습니다. 재발송해주세요.', 'err'); return; }
+  if (v !== _code) { M('인증코드가 일치하지 않습니다. 다시 확인해주세요.', 'err'); return; }
 
-  /* 인증 성공 */
-  clearInterval(_timer);
-  _verified = true;
-  document.getElementById('code-section').style.display = 'none';
-  document.getElementById('btn-send-code').style.display = 'none';
-  const badge = document.getElementById('verified-badge');
+  clearInterval(_tid);
+  _ok = true;
+  document.getElementById('code-box').style.display = 'none';
+  document.getElementById('btn-send').style.display = 'none';
+  const badge = document.getElementById('done-badge');
   badge.style.display = 'flex';
-  msg('이메일 인증이 완료됐습니다.', 'success');
+  M('이메일 인증이 완료됐습니다.', 'suc');
 }
 
-/* 전체동의 */
-function doToggleAll() {
-  const allChk = document.getElementById('chk-all');
-  const newVal = !allChk.checked;
-  allChk.checked = newVal;
-  ['chk1','chk2','chk3','chk4'].forEach(id => {
-    document.getElementById(id).checked = newVal;
+/* ── 전체동의 ── */
+window.addEventListener('DOMContentLoaded', function() {
+  watchEmail();
+
+  /* 전체동의 행 클릭 */
+  document.getElementById('row-all').addEventListener('click', function(e) {
+    e.preventDefault();
+    const ca = document.getElementById('ca');
+    const newVal = !ca.checked;
+    ca.checked = newVal;
+    ['c1','c2','c3','c4'].forEach(function(id) {
+      document.getElementById(id).checked = newVal;
+    });
   });
-}
 
-function doToggle(id) {
-  const el = document.getElementById(id);
-  el.checked = !el.checked;
-  /* 전체동의 상태 동기화 */
-  const allChecked = ['chk1','chk2','chk3','chk4'].every(i => document.getElementById(i).checked);
-  document.getElementById('chk-all').checked = allChecked;
-}
+  /* 개별 항목 클릭 */
+  ['c1','c2','c3','c4'].forEach(function(id) {
+    document.getElementById('row-' + id).addEventListener('click', function(e) {
+      e.preventDefault();
+      const el = document.getElementById(id);
+      el.checked = !el.checked;
+      syncAll();
+    });
+  });
 
-/* 가입하기 */
+  function syncAll() {
+    const all = ['c1','c2','c3','c4'].every(function(id) {
+      return document.getElementById(id).checked;
+    });
+    document.getElementById('ca').checked = all;
+  }
+});
+
+/* ── 가입하기 ── */
 async function doSignup() {
-  const name   = document.getElementById('name').value.trim();
-  const email  = document.getElementById('email').value.trim();
-  const pw     = document.getElementById('pw').value;
-  const pw2    = document.getElementById('pw2').value;
-  const utype  = document.getElementById('user-type').value;
-  const ftype  = document.getElementById('field-type').value;
+  const name  = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const pw    = document.getElementById('pw').value;
+  const pw2   = document.getElementById('pw2').value;
+  const utype = document.getElementById('utype').value;
+  const ftype = document.getElementById('ftype').value;
 
-  if (!name)      { msg('이름(활동명)을 입력해주세요.', 'error'); return; }
-  if (!email)     { msg('이메일을 입력해주세요.', 'error'); return; }
-  if (!_verified) { msg('이메일 인증을 먼저 완료해주세요.', 'error'); return; }
-  if (pw.length < 8) { msg('비밀번호는 8자 이상이어야 합니다.', 'error'); return; }
-  if (pw !== pw2) { msg('비밀번호가 일치하지 않습니다.', 'error'); return; }
-  if (!utype)     { msg('유형을 선택해주세요.', 'error'); return; }
-  if (!document.getElementById('chk1').checked ||
-      !document.getElementById('chk2').checked ||
-      !document.getElementById('chk3').checked) {
-    msg('필수 약관에 모두 동의해주세요.', 'error'); return;
+  if (!name)      { M('이름(활동명)을 입력해주세요.', 'err'); return; }
+  if (!email)     { M('이메일을 입력해주세요.', 'err'); return; }
+  if (!_ok)       { M('이메일 인증을 먼저 완료해주세요.', 'err'); return; }
+  if (pw.length < 8) { M('비밀번호는 8자 이상이어야 합니다.', 'err'); return; }
+  if (pw !== pw2) { M('비밀번호가 일치하지 않습니다.', 'err'); return; }
+  if (!utype)     { M('유형을 선택해주세요.', 'err'); return; }
+  if (!document.getElementById('c1').checked ||
+      !document.getElementById('c2').checked ||
+      !document.getElementById('c3').checked) {
+    M('필수 약관에 모두 동의해주세요.', 'err'); return;
   }
 
-  const btn = document.getElementById('btn-submit');
+  const btn = document.getElementById('btn-go');
   btn.textContent = '가입 중...';
   btn.disabled = true;
 
-  const { error } = await sb.auth.signUp({
+  const { error } = await SB.auth.signUp({
     email, password: pw,
     options: {
       data: { name, user_type: utype, field_type: ftype },
@@ -431,16 +347,15 @@ async function doSignup() {
   });
 
   if (error) {
-    let m = '가입 중 오류가 발생했습니다.';
-    if (error.message.includes('already')) m = '이미 가입된 이메일입니다. 로그인해주세요.';
-    if (error.message.includes('password')) m = '비밀번호는 8자 이상이어야 합니다.';
-    msg(m, 'error');
+    let t = '가입 중 오류가 발생했습니다.';
+    if (error.message.includes('already')) t = '이미 가입된 이메일입니다. 로그인해주세요.';
+    M(t, 'err');
     btn.textContent = '가입하기';
     btn.disabled = false;
     return;
   }
 
-  msg('가입이 완료됐습니다! 로그인 페이지로 이동합니다.', 'success');
+  M('가입이 완료됐습니다! 로그인 페이지로 이동합니다.', 'suc');
   btn.textContent = '가입 완료 ✓';
   setTimeout(() => { window.location.href = 'login.html'; }, 2500);
 }
