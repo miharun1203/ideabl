@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>체크박스 테스트</title>
+<style>
+body{font-family:sans-serif;padding:40px;max-width:400px;margin:0 auto}
+.box{border:1px solid #ddd;border-radius:6px;overflow:hidden;margin-bottom:20px}
+.row{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #eee;cursor:pointer}
+.row:last-child{border-bottom:none}
+.row.all{background:#f5f5f5;font-weight:600}
+input[type=checkbox]{width:18px;height:18px;accent-color:#1A1A1A;flex-shrink:0;pointer-events:none}
+#result{padding:12px;background:#f0f7ff;border-radius:4px;font-size:13px;color:#1d4ed8}
+</style>
+</head>
+<body>
+<h3 style="margin-bottom:20px">약관 동의 테스트</h3>
+<div class="box">
+  <div class="row all" id="rowAll">
+    <input type="checkbox" id="cAll"> 전체 동의
+  </div>
+  <div class="row" id="row1">
+    <input type="checkbox" id="c1"> 이용약관 동의 (필수)
+  </div>
+  <div class="row" id="row2">
+    <input type="checkbox" id="c2"> 개인정보 수집·이용 동의 (필수)
+  </div>
+  <div class="row" id="row3">
+    <input type="checkbox" id="c3"> AI 창작물 보호 정책 동의 (필수)
+  </div>
+  <div class="row" id="row4">
+    <input type="checkbox" id="c4"> 마케팅 수신 동의 (선택)
+  </div>
+</div>
+<div id="result">체크박스를 클릭해보세요</div>
+
+<script>
+var IDS = ['c1','c2','c3','c4'];
+
+function syncAll() {
+  var all = IDS.every(function(id){ return document.getElementById(id).checked; });
+  document.getElementById('cAll').checked = all;
+  updateResult();
+}
+
+function updateResult() {
+  var checked = IDS.filter(function(id){ return document.getElementById(id).checked; });
+  document.getElementById('result').textContent =
+    '선택된 항목: ' + (checked.length === 0 ? '없음' : checked.join(', '));
+}
+
+// 전체동의 행 클릭
+document.getElementById('rowAll').addEventListener('click', function() {
+  var newVal = !document.getElementById('cAll').checked;
+  document.getElementById('cAll').checked = newVal;
+  IDS.forEach(function(id){ document.getElementById(id).checked = newVal; });
+  updateResult();
+});
+
+// 개별 행 클릭
+IDS.forEach(function(id) {
+  document.getElementById('row' + id.replace('c','')).addEventListener('click', function() {
+    document.getElementById(id).checked = !document.getElementById(id).checked;
+    syncAll();
+  });
+});
+</script>
+</body>
+</html>
