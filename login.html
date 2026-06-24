@@ -7,88 +7,45 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
   --ink: #1A1A1A; --ink-mid: #555552; --ink-light: #8A8880;
   --paper: #FAFAF8; --paper-2: #F3F1EB; --rule: #E0DDD5; --rule-dark: #C8C5BC;
-  --green: #1D7A5F; --green-lt: #E4F0EC;
+  --green: #1D7A5F; --green-lt: #E4F0EC; --red: #B91C1C; --red-lt: #FEF2F2;
   --serif: 'Noto Serif KR', serif; --sans: 'Noto Sans KR', sans-serif;
 }
 body { font-family: var(--sans); background: var(--paper); color: var(--ink); min-height: 100vh; display: flex; flex-direction: column; }
-
-nav {
-  border-bottom: 1px solid var(--rule); padding: 0 48px; height: 60px;
-  display: flex; align-items: center; justify-content: space-between;
-}
+nav { border-bottom: 1px solid var(--rule); padding: 0 48px; height: 60px; display: flex; align-items: center; }
 .nav-logo { font-family: var(--serif); font-weight: 700; font-size: 17px; color: var(--ink); text-decoration: none; }
 .nav-logo span { color: var(--ink-light); font-weight: 300; font-size: 14px; }
-
-.page-wrap {
-  flex: 1; display: flex; align-items: center; justify-content: center;
-  padding: 60px 24px;
-}
-.card {
-  width: 100%; max-width: 420px;
-  background: white; border: 1px solid var(--rule);
-  border-radius: 8px; padding: 48px 40px;
-}
-.card-eyebrow {
-  display: flex; align-items: center; gap: 8px; margin-bottom: 12px;
-}
+.page-wrap { flex: 1; display: flex; align-items: center; justify-content: center; padding: 60px 24px; }
+.card { width: 100%; max-width: 420px; background: white; border: 1px solid var(--rule); border-radius: 8px; padding: 48px 40px; }
+.card-eyebrow { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
 .card-eyebrow-line { width: 20px; height: 1px; background: var(--ink-light); }
 .card-eyebrow span { font-size: 10px; color: var(--ink-light); letter-spacing: 0.2em; }
-.card-title {
-  font-family: var(--serif); font-weight: 700; font-size: 26px;
-  color: var(--ink); letter-spacing: -0.02em; margin-bottom: 32px;
-}
-.field { margin-bottom: 20px; }
-.field label {
-  display: block; font-size: 12px; color: var(--ink-mid);
-  letter-spacing: 0.06em; margin-bottom: 8px;
-}
-.field input {
-  width: 100%; height: 44px; padding: 0 14px;
-  border: 1px solid var(--rule-dark); border-radius: 4px;
-  font-family: var(--sans); font-size: 14px; color: var(--ink);
-  background: var(--paper); outline: none; transition: border-color 0.2s;
-}
+.card-title { font-family: var(--serif); font-weight: 700; font-size: 26px; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 28px; }
+.field { margin-bottom: 18px; }
+.field label { display: block; font-size: 12px; color: var(--ink-mid); letter-spacing: 0.06em; margin-bottom: 7px; }
+.field-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+.field-row label { margin-bottom: 0; font-size: 12px; color: var(--ink-mid); letter-spacing: 0.06em; }
+.field input { width: 100%; height: 44px; padding: 0 14px; border: 1px solid var(--rule-dark); border-radius: 4px; font-family: var(--sans); font-size: 14px; color: var(--ink); background: var(--paper); outline: none; transition: border-color 0.2s; }
 .field input:focus { border-color: var(--ink); }
 .field input::placeholder { color: var(--ink-light); }
-.field-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.field-row label { margin-bottom: 0; font-size: 12px; color: var(--ink-mid); letter-spacing: 0.06em; }
 .field-link { font-size: 12px; color: var(--ink-light); text-decoration: none; }
 .field-link:hover { color: var(--ink); }
-.btn-submit {
-  width: 100%; height: 48px; background: var(--ink); color: var(--paper);
-  border: none; border-radius: 4px; font-family: var(--sans);
-  font-size: 14px; letter-spacing: 0.06em; cursor: pointer;
-  margin-top: 8px; transition: background 0.2s;
-}
+.btn-submit { width: 100%; height: 48px; background: var(--ink); color: var(--paper); border: none; border-radius: 4px; font-family: var(--sans); font-size: 14px; letter-spacing: 0.06em; cursor: pointer; margin-top: 4px; transition: background 0.2s; }
 .btn-submit:hover { background: #333; }
-.divider {
-  display: flex; align-items: center; gap: 12px; margin: 24px 0;
-}
+.btn-submit:disabled { background: var(--rule-dark); cursor: not-allowed; }
+.msg { padding: 10px 14px; border-radius: 4px; font-size: 13px; margin-bottom: 16px; display: none; line-height: 1.6; }
+.msg.error { background: var(--red-lt); border: 1px solid #FECACA; color: var(--red); display: block; }
+.msg.success { background: var(--green-lt); border: 1px solid #6EE7B7; color: var(--green); display: block; }
+.divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; }
 .divider-line { flex: 1; height: 1px; background: var(--rule); }
 .divider span { font-size: 11px; color: var(--ink-light); letter-spacing: 0.1em; }
-.social-btn {
-  width: 100%; height: 44px; background: white;
-  border: 1px solid var(--rule-dark); border-radius: 4px;
-  font-family: var(--sans); font-size: 13px; color: var(--ink-mid);
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  gap: 10px; margin-bottom: 10px; transition: border-color 0.2s;
-  text-decoration: none;
-}
-.social-btn:hover { border-color: var(--ink); color: var(--ink); }
-.card-footer { text-align: center; margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--rule); }
-.card-footer span { font-size: 13px; color: var(--ink-light); }
-.card-footer a { font-size: 13px; color: var(--ink); text-decoration: none; font-weight: 500; }
-.card-footer a:hover { text-decoration: underline; }
-.error-msg {
-  display: none; background: #FEF2F2; border: 1px solid #FECACA;
-  border-radius: 4px; padding: 10px 14px; margin-bottom: 16px;
-  font-size: 13px; color: #B91C1C;
-}
+.card-footer { text-align: center; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--rule); font-size: 13px; color: var(--ink-light); }
+.card-footer a { color: var(--ink); font-weight: 500; text-decoration: none; }
 </style>
 </head>
 <body>
@@ -102,7 +59,9 @@ nav {
       <span>SIGN IN</span>
     </div>
     <div class="card-title">로그인</div>
-    <div class="error-msg" id="error-msg">이메일 또는 비밀번호를 확인해주세요.</div>
+
+    <div class="msg" id="msg"></div>
+
     <div class="field">
       <label>이메일</label>
       <input type="email" id="email" placeholder="example@email.com" autocomplete="email">
@@ -110,39 +69,67 @@ nav {
     <div class="field">
       <div class="field-row">
         <label>비밀번호</label>
-        <a href="#" class="field-link">비밀번호 찾기</a>
+        <a href="reset.html" class="field-link">비밀번호 찾기</a>
       </div>
-      <input type="password" id="password" placeholder="비밀번호 입력" autocomplete="current-password">
+      <input type="password" id="pw" placeholder="비밀번호 입력" autocomplete="current-password">
     </div>
-    <button class="btn-submit" onclick="handleLogin()">로그인</button>
+    <button class="btn-submit" id="btn-submit" onclick="handleLogin()">로그인</button>
+
     <div class="divider">
       <div class="divider-line"></div>
       <span>또는</span>
       <div class="divider-line"></div>
     </div>
-    <a href="#" class="social-btn">
-      <svg width="18" height="18" viewBox="0 0 18 18"><path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z" fill="#4285F4"/><path d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853"/><path d="M3.964 10.707c-.18-.54-.282-1.117-.282-1.707s.102-1.167.282-1.707V4.961H.957C.347 6.175 0 7.548 0 9s.348 2.825.957 4.039l3.007-2.332z" fill="#FBBC05"/><path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0 5.482 0 2.438 2.017.957 4.961L3.964 7.293C4.672 5.166 6.656 3.58 9 3.58z" fill="#EA4335"/></svg>
-      Google로 로그인
-    </a>
-    <a href="#" class="social-btn">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect width="18" height="18" rx="3" fill="#FEE500"/><path d="M9 3.6C6.015 3.6 3.6 5.46 3.6 7.755c0 1.44.9 2.7 2.25 3.465-.09.315-.585 2.07-.63 2.25 0 0-.015.12.06.165s.165.015.165.015c.21-.03 2.46-1.62 2.85-1.89.21.03.435.045.66.045 2.985 0 5.4-1.86 5.4-4.155S11.985 3.6 9 3.6z" fill="#391B1B"/></svg>
-      카카오로 로그인
-    </a>
+
+    <div style="text-align:center; font-size:12px; color:var(--ink-light); line-height:1.7;">
+      소셜 로그인은 준비 중입니다.<br>이메일로 로그인해주세요.
+    </div>
+
     <div class="card-footer">
-      <span>아직 계정이 없으신가요? </span>
-      <a href="signup.html">회원가입</a>
+      아직 계정이 없으신가요? <a href="signup.html">회원가입</a>
     </div>
   </div>
 </div>
+
 <script>
-function handleLogin() {
-  const email = document.getElementById('email').value;
-  const pw = document.getElementById('password').value;
-  const err = document.getElementById('error-msg');
-  if (!email || !pw) { err.style.display = 'block'; return; }
-  err.style.display = 'none';
-  alert('준비 중입니다. 베타 서비스 오픈 후 이용 가능합니다.');
+const SUPABASE_URL = 'https://tavdxdgubabokhklpeme.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_g2jvs3vYubeC7vI5W9gs1g_BUabVfhX';
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+function showMsg(text, type) {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + type;
 }
+
+async function handleLogin() {
+  const email = document.getElementById('email').value.trim();
+  const pw = document.getElementById('pw').value;
+  if (!email || !pw) { showMsg('이메일과 비밀번호를 입력해주세요.', 'error'); return; }
+
+  const btn = document.getElementById('btn-submit');
+  btn.textContent = '로그인 중...';
+  btn.disabled = true;
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password: pw });
+
+  if (error) {
+    let msg = '로그인에 실패했습니다.';
+    if (error.message.includes('Invalid login')) msg = '이메일 또는 비밀번호가 올바르지 않습니다.';
+    if (error.message.includes('Email not confirmed')) msg = '이메일 인증이 필요합니다. 메일함을 확인해주세요.';
+    showMsg(msg, 'error');
+    btn.textContent = '로그인';
+    btn.disabled = false;
+    return;
+  }
+
+  showMsg('로그인 성공! 잠시 후 이동합니다.', 'success');
+  setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleLogin();
+});
 </script>
 </body>
 </html>
