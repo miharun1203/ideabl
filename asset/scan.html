@@ -1,0 +1,233 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>자산 스캔 점검</title><style>:root{--navy:#1B2A4A;--navy2:#2B3F6B;--bg:#F3F5F9;--line:#DDE2EC;--ok:#1E8E5A;--bad:#B42318;--mute:#6B7690}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#16203A;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",sans-serif}[hidden]{display:none!important}.wrap{max-width:480px;margin:0 auto;padding:16px 16px 40px}.hero{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:16px;padding:20px}.chip{display:inline-block;font-size:12px;letter-spacing:.5px;background:rgba(255,255,255,.14);padding:4px 10px;border-radius:999px}.hero h1{font-size:22px;margin:12px 0 4px}.hero p{margin:0;color:#C9D3EA;font-size:13px;line-height:1.5}.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:12px}label{display:block;font-size:13px;color:var(--mute);margin:0 0 6px}input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:16px;font-family:inherit;color:inherit}.btn{width:100%;border:0;border-radius:12px;padding:14px;font-size:16px;font-weight:700;cursor:pointer;margin-top:12px}.primary{background:var(--navy);color:#fff}.ghost{background:#fff;color:var(--navy);border:1px solid var(--line)}.btn[disabled]{opacity:.5;cursor:default}.row{display:flex;gap:8px}.row input{flex:1}.row .btn{width:auto;margin-top:0;padding:12px 16px}.who{font-size:14px;background:#EEF2FB;padding:10px 12px;border-radius:10px}#reader{margin-top:12px;border-radius:12px;overflow:hidden;background:#0E1730;min-height:60px}#reader video{width:100%!important;display:block}.status{margin-top:10px;font-size:14px;padding:10px 12px;border-radius:10px;background:#EEF2FB;color:#16203A;line-height:1.5}.status.ok{background:#E6F6EE;color:var(--ok)}.status.bad{background:#FDECEA;color:var(--bad)}.status.warn{background:#FFF6E0;color:#8A5A00}.msg{margin-top:10px;font-size:14px;padding:10px 12px;border-radius:10px;background:#FDECEA;color:var(--bad)}.sub{font-size:12px;color:var(--mute);margin-top:14px}#log{list-style:none;margin:8px 0 0;padding:0}#log li{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:10px;margin-top:6px;font-size:14px;background:#F6F8FC;border-left:4px solid var(--line)}#log li span{font-size:12px;color:var(--mute);word-break:break-all}#log li.ok{border-left-color:var(--ok)}#log li.bad{border-left-color:var(--bad)}#log li.dup{border-left-color:#C98A00}#cnt{font-size:13px;color:var(--mute);margin-top:12px}</style></head><body><main class="wrap"><div class="hero"><span class="chip">바코드 점검</span><h1>자산 스캔 점검</h1><p>자산에 붙은 바코드(또는 QR)를 카메라로 비추면 자동으로 점검 완료 처리됩니다.</p></div><div id="login" class="card"><label for="emp">사번</label><input id="emp" type="text" maxlength="20" autocomplete="off" autocapitalize="off" placeholder="사번을 입력하세요"><div id="loginMsg" class="msg" hidden></div><button id="loginBtn" type="button" class="btn primary">확인 후 스캔 시작</button></div><div id="scanner" class="card" hidden><div id="who" class="who"></div><div id="reader"></div><div id="status" class="status">카메라 준비 중…</div><button id="camBtn" type="button" class="btn ghost">카메라 켜기</button><p class="sub">카메라가 안 될 때는 바코드 번호(숫자 8자리)를 직접 입력하거나 바코드 스캐너로 입력할 수 있습니다.</p><div class="row"><input id="manual" type="text" maxlength="40" autocomplete="off" inputmode="text" placeholder="바코드 번호"><button id="manualBtn" type="button" class="btn primary">확인</button></div><div id="cnt"></div><ul id="log"></ul></div></main><script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script><script>window.Html5Qrcode||document.write('<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"><\/script>');</script><script>var D={"api":"https://script.google.com/macros/s/AKfycbxSilwwAm4OIj_bMJASwOAPyDVarp7DrCtCchJ-l4x3qWTFqik_GhhCNjlx05YNXT03cw/exec","who":null};</script><script>(function scanClient_() {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var inGas = !!(window.google && window.google.script && window.google.script.run);
+  var empNo = '';
+  var scanner = null;
+  var running = false;
+  var busy = false;
+  var lastCode = '';
+  var lastAt = 0;
+  var okCount = 0;
+  var audioCtx = null;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) { n.className = cls; }
+    if (text !== undefined && text !== null) { n.textContent = text; }
+    return n;
+  }
+
+  function call(action, data, onOk, onFail) {
+    if (inGas) {
+      var r = window.google.script.run
+        .withSuccessHandler(onOk)
+        .withFailureHandler(function () { onFail(); });
+      if (action === 'scan') { r.webScan(data); } else { r.webIdentify(data); }
+      return;
+    }
+    if (!D.api) { onFail('API 주소가 설정되지 않았습니다. 관리자에게 문의해 주세요.'); return; }
+    fetch(D.api, {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      body: JSON.stringify({ action: action, code: data.code, empNo: data.empNo }),
+      redirect: 'follow'
+    }).then(function (res) { return res.json(); })
+      .then(onOk)
+      .catch(function () { onFail(); });
+  }
+
+  function setStatus(text, kind) {
+    var s = $('status');
+    s.textContent = text;
+    s.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function beep(ok) {
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) { return; }
+      audioCtx = audioCtx || new AC();
+      var o = audioCtx.createOscillator();
+      var g = audioCtx.createGain();
+      o.frequency.value = ok ? 880 : 220;
+      g.gain.value = 0.08;
+      o.connect(g);
+      g.connect(audioCtx.destination);
+      o.start();
+      o.stop(audioCtx.currentTime + (ok ? 0.09 : 0.22));
+    } catch (e) { /* 소리 실패는 무시 */ }
+  }
+
+  function feedback(ok) {
+    try { if (navigator.vibrate) { navigator.vibrate(ok ? 60 : [80, 60, 80]); } } catch (e) { /* 무시 */ }
+    beep(ok);
+  }
+
+  function addLog(kind, title, sub) {
+    var li = el('li', kind);
+    li.appendChild(el('b', '', title));
+    li.appendChild(el('span', '', sub));
+    var ul = $('log');
+    ul.insertBefore(li, ul.firstChild);
+    while (ul.children.length > 30) { ul.removeChild(ul.lastChild); }   // 목록 길이 제한 (메모리 보호)
+  }
+
+  function parseCode(text) {
+    var s = String(text || '').replace(/^\s+|\s+$/g, '');
+    if (/^\d{8}$/.test(s)) { return s; }
+    if (/^[A-Za-z0-9]{1,10}-\d{4}-\d{4}$/.test(s)) { return s; }
+    var m = /[?&]id=([A-Za-z0-9]{1,10}-\d{4}-\d{4})(?:&|$)/.exec(s);   // 자산에 붙은 QR(링크)도 인식
+    return m ? m[1] : '';
+  }
+
+  function submit(raw) {
+    var code = parseCode(raw);
+    if (!code) {
+      setStatus('인식할 수 없는 코드입니다: ' + String(raw).slice(0, 30), 'bad');
+      feedback(false);
+      return;
+    }
+    var now = Date.now();
+    if (code === lastCode && now - lastAt < 4000) { return; }   // 같은 코드를 연속 인식한 경우 무시
+    if (busy) { return; }
+    lastCode = code;
+    lastAt = now;
+    busy = true;
+    setStatus('확인 중… ' + code);
+    call('scan', { code: code, empNo: empNo }, function (r) {
+      busy = false;
+      if (r && r.ok) {
+        if (r.dup) {
+          addLog('dup', r.name + ' · 오늘 이미 점검됨', r.id + ' · ' + r.who + ' · ' + r.time);
+          setStatus('이미 점검된 자산입니다: ' + r.name, 'warn');
+        } else {
+          okCount += 1;
+          addLog('ok', '✓ ' + r.name + ' 점검 완료', r.id + (r.loc ? ' · ' + r.loc : '') + ' · ' + r.time);
+          setStatus('✓ 점검 완료: ' + r.name, 'ok');
+          $('cnt').textContent = '이번 접속에서 ' + okCount + '건 점검 완료';
+        }
+        feedback(true);
+      } else {
+        var m = (r && r.msg) || '처리하지 못했습니다.';
+        addLog('bad', '점검 실패', m);
+        setStatus(m, 'bad');
+        feedback(false);
+      }
+    }, function (m) {
+      busy = false;
+      lastCode = '';
+      setStatus(m || '네트워크 오류입니다. 연결을 확인하고 다시 스캔해 주세요.', 'bad');
+      feedback(false);
+    });
+  }
+
+  function cameraError(err) {
+    running = false;
+    $('camBtn').textContent = '카메라 켜기';
+    var m = String((err && (err.message || err.name)) || err || '');
+    var msg = '카메라를 사용할 수 없습니다.';
+    if (window.isSecureContext === false) {
+      msg += ' https 주소에서만 카메라를 쓸 수 있습니다.';
+    } else if (/permission|notallowed|denied|policy/i.test(m)) {
+      msg += inGas
+        ? ' 구글 Apps Script 화면에서는 카메라가 차단될 수 있습니다. 개인 사이트에 올린 스캔 페이지를 이용하거나, 아래 입력칸에 바코드 번호를 입력해 주세요.'
+        : ' 브라우저의 카메라 권한을 허용해 주세요. (카카오톡 등 앱 안 브라우저라면 크롬/사파리로 열어 주세요)';
+    } else if (/notfound|requested device|no camera/i.test(m)) {
+      msg += ' 카메라를 찾을 수 없습니다.';
+    }
+    setStatus(msg, 'bad');
+  }
+
+  function startCamera() {
+    if (running) { return; }
+    if (typeof Html5Qrcode === 'undefined') {
+      setStatus('스캔 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인하거나 아래 입력칸을 사용해 주세요.', 'bad');
+      return;
+    }
+    try {
+      if (!scanner) {
+        scanner = new Html5Qrcode('reader', {
+          formatsToSupport: [Html5QrcodeSupportedFormats.CODE_128, Html5QrcodeSupportedFormats.QR_CODE],
+          useBarCodeDetectorIfSupported: true,
+          verbose: false
+        });
+      }
+    } catch (e) { cameraError(e); return; }
+    setStatus('카메라를 켜는 중…');
+    scanner.start(
+      { facingMode: 'environment' },
+      {
+        fps: 10,
+        qrbox: function (w, h) {
+          return { width: Math.max(120, Math.floor(w * 0.9)), height: Math.max(80, Math.floor(Math.min(h, w) * 0.45)) };
+        }
+      },
+      function (text) { submit(text); },
+      function () { /* 프레임마다 발생하는 미인식 알림은 무시 */ }
+    ).then(function () {
+      running = true;
+      $('camBtn').textContent = '카메라 끄기';
+      setStatus('바코드를 사각형 안에 맞춰 주세요.');
+    }).catch(cameraError);
+  }
+
+  function stopCamera() {
+    if (!scanner || !running) { return; }
+    running = false;
+    $('camBtn').textContent = '카메라 켜기';
+    scanner.stop().catch(function () { /* 이미 정지된 경우 */ });
+  }
+
+  function begin(person, emp) {
+    empNo = emp;
+    $('login').hidden = true;
+    $('scanner').hidden = false;
+    $('who').textContent = person.name + (person.dept ? ' · ' + person.dept : '') + ' 님';
+    startCamera();
+  }
+
+  function loginMsg(t) {
+    var m = $('loginMsg');
+    m.textContent = t;
+    m.hidden = !t;
+  }
+
+  function doLogin() {
+    var v = $('emp').value.replace(/^\s+|\s+$/g, '');
+    if (!v) { loginMsg('사번을 입력해 주세요.'); return; }
+    loginMsg('');
+    $('loginBtn').disabled = true;
+    call('identify', { empNo: v }, function (r) {
+      $('loginBtn').disabled = false;
+      if (r && r.ok) {
+        try { localStorage.setItem('assetEmpNo', v); } catch (e) { /* 저장 불가 환경 */ }
+        begin(r, v);
+      } else {
+        loginMsg((r && r.msg) || '확인하지 못했습니다.');
+      }
+    }, function (m) {
+      $('loginBtn').disabled = false;
+      loginMsg(m || '서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.');
+    });
+  }
+
+  function doManual() {
+    var inp = $('manual');
+    var v = inp.value;
+    inp.value = '';
+    if (v.replace(/\s/g, '')) { submit(v); }
+    if (!('ontouchstart' in window)) { inp.focus(); }
+  }
+
+  $('loginBtn').addEventListener('click', doLogin);
+  $('emp').addEventListener('keydown', function (e) { if (e.key === 'Enter') { doLogin(); } });
+  $('camBtn').addEventListener('click', function () { if (running) { stopCamera(); } else { startCamera(); } });
+  $('manualBtn').addEventListener('click', doManual);
+  $('manual').addEventListener('keydown', function (e) { if (e.key === 'Enter') { doManual(); } });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) { stopCamera(); } });
+  window.addEventListener('pagehide', stopCamera);
+
+  try { var saved = localStorage.getItem('assetEmpNo'); if (saved) { $('emp').value = saved; } } catch (e) { /* 무시 */ }
+  if (D.who) { begin(D.who, ''); }   // 구글 계정으로 이미 확인된 경우 바로 시작
+})();</script></body></html>
